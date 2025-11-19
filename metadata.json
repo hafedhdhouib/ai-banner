@@ -1,0 +1,5 @@
+{
+  "name": "Copy of AI Banner Ad Generator",
+  "description": "Generate a suite of high-quality, professional banner ads in standard aspect ratios from a simple product description. Powered by Google's Imagen 4 model.",
+  "requestFramePermissions": []
+}

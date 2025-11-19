@@ -1,0 +1,137 @@
+<main class="min-h-screen bg-slate-900 text-slate-100 font-sans p-4 sm:p-6 lg:p-8">
+  <div class="max-w-6xl mx-auto">
+    
+    <!-- Header -->
+    <header class="text-center mb-8">
+      <div class="flex items-center justify-center gap-4 mb-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-sky-400" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M21.92,3.08A3,3,0,0,0,19,2H5A3,3,0,0,0,2,5V19a3,3,0,0,0,3,3H19a3,3,0,0,0,3-3V5A3,3,0,0,0,21.92,3.08ZM5,20a1,1,0,0,1-1-1V12.69l3.3-3.3a1,1,0,0,1,1.4,0l3.3,3.3L16.7,8.3a1,1,0,0,1,1.4,0L22,12.11V19a1,1,0,0,1-1,1Z M20.5,8.91,17.4,5.81a1,1,0,0,1,1.4-1.42L22,7.5Z M7,10a2,2,0,1,1,2-2A2,2,0,0,1,7,10Z"/>
+        </svg>
+        <h1 class="text-4xl font-bold tracking-tight text-white">AI Banner Ad Studio</h1>
+      </div>
+      <p class="text-lg text-slate-400">Instantly generate a full suite of professional banner ads from a simple description.</p>
+    </header>
+
+    <!-- Form Section -->
+    <div class="bg-slate-800/50 rounded-lg p-6 sm:p-8 mb-8 border border-slate-700 shadow-lg space-y-8">
+      <!-- Step 1: Product Details -->
+      <fieldset>
+        <legend class="text-xl font-semibold text-white mb-4 flex items-center gap-3">
+          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-sky-600 text-white font-bold text-sm">1</span>
+          Describe Your Product
+        </legend>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label for="product-description" class="block text-sm font-medium text-sky-300 mb-2">Product Description</label>
+            <textarea id="product-description"
+                      rows="4"
+                      [value]="productDescription()"
+                      (input)="updateDescription($event)"
+                      placeholder="e.g., A high-performance electric mountain bike..."
+                      class="w-full bg-slate-900 border border-slate-600 rounded-md shadow-sm p-3 text-slate-200 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition duration-150 ease-in-out"></textarea>
+          </div>
+          <div>
+            <label for="product-url" class="block text-sm font-medium text-sky-300 mb-2">Product URL (for context)</label>
+            <input type="text"
+                   id="product-url"
+                   [value]="productUrl()"
+                   (input)="updateUrl($event)"
+                   placeholder="e.g., www.example.com/product"
+                   class="w-full bg-slate-900 border border-slate-600 rounded-md shadow-sm p-3 text-slate-200 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition duration-150 ease-in-out">
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- Step 2: Choose Style -->
+      <fieldset>
+        <legend class="text-xl font-semibold text-white mb-4 flex items-center gap-3">
+          <span class="flex items-center justify-center w-8 h-8 rounded-full bg-sky-600 text-white font-bold text-sm">2</span>
+          Choose a Design Style
+        </legend>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          @for (template of designTemplates; track template.name) {
+            <div (click)="selectTemplate(template)"
+                 class="cursor-pointer rounded-lg p-4 border-2 transition-colors duration-200 flex flex-col"
+                 [class]="selectedTemplate()?.name === template.name ? 'bg-sky-900/50 border-sky-500' : 'bg-slate-900 border-slate-700 hover:border-slate-500'">
+              <div class="flex items-center gap-3 mb-2">
+                <svg class="h-6 w-6 text-sky-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                   <path [attr.d]="template.icon" />
+                </svg>
+                <h3 class="font-semibold text-white">{{ template.name }}</h3>
+              </div>
+              <p class="text-sm text-slate-400 flex-grow">{{ template.description }}</p>
+            </div>
+          }
+        </div>
+      </fieldset>
+      
+      <!-- Step 3: Generate -->
+      <div class="pt-4 flex justify-center">
+        <button (click)="generateBanners()" 
+                [disabled]="isLoading() || !productDescription().trim()"
+                class="inline-flex items-center justify-center px-8 py-4 border border-transparent text-lg font-medium rounded-md shadow-sm text-white bg-sky-600 hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-sky-500 transition-transform duration-200 hover:scale-105 disabled:bg-slate-500 disabled:cursor-not-allowed disabled:scale-100">
+          @if (isLoading()) {
+            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span>Generating...</span>
+          } @else {
+            <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-3 h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+            </svg>
+            <span>Generate Ad Suite</span>
+          }
+        </button>
+      </div>
+    </div>
+
+    <!-- Error Display -->
+    @if (error()) {
+      <div class="bg-red-900/50 border border-red-700 text-red-300 px-4 py-3 rounded-lg relative mb-6" role="alert">
+        <strong class="font-bold">Generation Error:</strong>
+        <span class="block sm:inline ml-2">{{ error() }}</span>
+      </div>
+    }
+
+    <!-- Results Section -->
+    <div class="mt-8">
+      @if (isLoading()) {
+        <div class="text-center p-8">
+            <p class="text-lg text-slate-400">Generating your professional ad suite... this may take a moment.</p>
+            <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+                @for (format of bannerFormats; track format.name) {
+                    <div class="bg-slate-800 rounded-lg p-4 animate-pulse">
+                        <div class="w-full bg-slate-700 rounded" [style.aspect-ratio]="format.aspectRatio.replace(':', ' / ')"></div>
+                        <div class="h-4 bg-slate-700 rounded w-3/4 mt-4"></div>
+                        <div class="h-3 bg-slate-700 rounded w-1/2 mt-2"></div>
+                    </div>
+                }
+            </div>
+        </div>
+      } @else if (generatedBanners().length > 0) {
+        <h2 class="text-3xl font-bold mb-6 text-white">Your Generated Banners</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            @for (banner of generatedBanners(); track banner.imageUrl) {
+                <div class="bg-slate-800 rounded-lg overflow-hidden shadow-xl border border-slate-700 transition-transform duration-300 hover:scale-105 hover:border-sky-500">
+                    <img [src]="banner.imageUrl" [alt]="'Generated banner ad: ' + banner.name" class="w-full h-auto object-cover bg-slate-700">
+                    <div class="p-4">
+                        <h3 class="font-semibold text-lg text-white">{{ banner.name }}</h3>
+                        <p class="text-sm text-slate-400">{{ banner.aspectRatio }} Aspect Ratio</p>
+                    </div>
+                </div>
+            }
+        </div>
+      } @else if (!isLoading() && !error()) {
+        <div class="text-center bg-slate-800/50 rounded-lg p-12 border-2 border-dashed border-slate-700">
+            <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <h3 class="mt-2 text-xl font-medium text-white">Your generated ads will appear here</h3>
+            <p class="mt-1 text-slate-400">Fill in the details above and click "Generate" to start.</p>
+        </div>
+      }
+    </div>
+
+  </div>
+</main>
